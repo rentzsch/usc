@@ -56,7 +56,6 @@ export class InchesWithNormalizedFraction {
   ) {
     const additionalInches = Math.floor(inchesNumerator16 / 16);
     const remainderInchesNumerator = inchesNumerator16 % 16;
-    // console.log({ inches, inchesNumerator, additionalInches, remainderInchesNumerator });
     return new InchesWithNormalizedFraction(
       wholeInches + additionalInches,
       remainderInchesNumerator
@@ -241,10 +240,19 @@ export function usc(strings: TemplateStringsArray) {
     .captureSet(TokenType.Paren, /^\(/, /^\)/)
     .set(TokenType.Feet_Inches_Fraction, function (this: any) {
       // 1' 2-3/4"
-      const m = this.match(/^(\d+)'\s+(\d+)-(\d+)\/(\d+)"/);
+      const m = this.match(
+        /^(?<feet>\d+)'\s+(?<inches>\d+)-(?<numerator>\d+)\/(?<denominator>\d+)"/
+      );
       if (m) {
-        // TODO
-        return this.position()(`${m[1]}' ${m[2]}-${m[3]}/${m[4]}`);
+        return this.position()({
+          val: InchesWithNormalizedFraction.createFromMinimalFractionalInches(
+            parseInt(m.groups.feet, 10) * 12 + parseInt(m.groups.inches, 10),
+            InchesWithNormalizedFraction.normalizeToDenominator16(
+              parseInt(m.groups.numerator, 10),
+              parseInt(m.groups.denominator, 10)
+            )
+          ),
+        });
       }
     })
     .set(TokenType.Feet_Inches, function (this: any) {
