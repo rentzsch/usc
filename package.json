@@ -1,6 +1,6 @@
 {
   "name": "usc",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "USCU (United States Customary Unit) lengths (inches, feet) calculator in JS",
   "license": "MIT",
   "repository": "rentzsch/usc",
